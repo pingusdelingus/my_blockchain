@@ -113,7 +113,7 @@ class Blockchain(object):
         #if they are equal, we want to check that the privateHash(list of 2 primes)
         # is equal to the product of two primes that we are going to be finding here 
 
-        #we use binary search to make this algorithm O(n * log_2(n)) time complexity
+        #we use binary search alongside linear to make this algorithm O(n * log_2(n)) time complexity
         for pi in range(0,lenintList):
             lo = 0
             hi = lenintList
