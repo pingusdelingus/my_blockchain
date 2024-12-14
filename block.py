@@ -1,21 +1,25 @@
 from time import time
 
 class Block:
-    def __init__(self, index,text, previousHash, privatehash, publicHash):
+    def __init__(self, index,text, previousPublicHash, privatehash, publicHash):
         self.index = index
         self.text = text
         self.time = time()
-        self.prevPublicHash = previousHash
+        self.prevPublicHash = previousPublicHash
 
         # private hash is a list of 2 primes
         self.privateHash = privatehash
 
         #public hash is a number that is the product of privateHash[0] and privateHash[1]
         self.publicHash = publicHash
+    def getPREVPublicHash(self):
+        return self.prevPublicHash
     def getPublicHash(self):
         return self.publicHash
-    def verifyPrivateAndPublic(self, candidate1, candidate2):
-        if candidate1 * candidate2 == self.privateHash:
+    def verifyPrivateAndPublic(self,):
+        candidate1 = self.privateHash.pop(0)
+        candidate2 = self.privateHash.pop(0)
+        if candidate1 * candidate2 == self.publicHash:
             return True
         else:
             return False
