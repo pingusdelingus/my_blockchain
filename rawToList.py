@@ -2,10 +2,7 @@ import os
 
 filepath = 'primes.txt'
 
-if os.path.exists(filepath):
-    print('found!')
-else:
-    print('not found :(')
+
 
 
 def turnRawToListOfInt():
@@ -14,7 +11,7 @@ def turnRawToListOfInt():
     clean = content.replace('\n', '')
     stringList = clean.split(',')
     integer_list = [int(num) for num in stringList if num.strip().isdigit()]
-    print(len(integer_list))
+
 #    print(integer_list)
     return integer_list
 

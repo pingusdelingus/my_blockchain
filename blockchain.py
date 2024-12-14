@@ -1,51 +1,94 @@
 from time import time
 import random
 import hashlib
+from block import Block
 import _json
 from rawToList import turnRawToListOfInt
+from transaction import Transaction
 class Blockchain(object):
     def __init__(self):
         self.chain = []
-        self.current_transactions = []
+        self.pending_transactions = []
+        self.all_transactions = []
         self.length = 0
 
-    def newBlock(self, proof, previous_hash=None):
-        #create a new block and APPEND to chain
-        block = {
-            'index' : len(self.chain) + 1,
-            'timestamp' : time(),
-            'transactions' : self.current_transactions,
-            'proof' : proof,
-            'previous_hash' : self.hash(self.chain[-1])
-        }
-        self.current_transactions = []
-        self.chain.append(block)
-        return block
+    def newBlock(self, proof,text, previous_hash=None):
 
-    def newTransaction(self, sender, receiver, ammount):
+        prevH = self.last_block.getPublicHash()
+        newH = self.hash()
+
+        pubH = newH.pop(0)
+        privH = newH
+
+        newB = Block(len(self.chain), text, prevH, privH, pubH)
+        self.chain.append(newB)
+        return newB
+    def createGenesis(self):
+        #in the future, these will be random
+        prevH = 14
+        newH = 2627 
+
+
+        genesis = Block(0,'First Block!',prevH, newH)
+        if len(self.chain) == 0:
+            self.chain.append(genesis)
+        else:
+            print('chain not empty tf u think u doin')
+    
+    def mineBlock(self):
+        if not self.pending_transactions:
+            print("no transactions to mine at this time")
+            return
+        prevH = self.last_block.getPublicHash() 
+        newH = self.hash()
+        pubH = newH.pop(0)
+        privH = newH
+        newB = Block(len(self.chain),f"this is the {len(self.chain)}th block",prevH, privH, pubH)
+        self.pending_transactions = self.pending_transactions[1:]
+        return
+        
+
+    def newTransaction(self, sender, receiver, amount):
         #creates a new transaction and appends it to the transaction chain
-        transaction = {
-            'SENDER' : sender,
-            'RECEIVER' : receiver,
-            'AMMOUNT' : ammount            
-        }
-        return self.last_block['index'] + 1
+        transac = Transaction(sender, receiver, amount)
+        self.pending_transactions.append(transac)
 
-
-    @staticmethod
-    def hash(block):
+    def hash():
         #hashes a block using 
-        random1 = random.randint(0,78497)
-        random2 = random.randint(0,78497)
+        random1 = random.randint(0,70000)
+        random2 = random.randint(0,70000)
         while random1 == random2:
-            random2 = random.randint(0,78497)
+            random2 = random.randint(0,7000)
+        intList = turnRawToListOfInt()
+        return [intList[random1] * intList[random2], intList[random1], intList[random2]]
+    
 
+    def isChainValid(self):
+        index = 1
+        while index < len(self.chain):
+            prevB = self.chain[index - 1]
+            currB = self.chain[index]
+            currBpubHash = 
+
+            if currB.hash != currB.calculateHash():
+                print("somethin wrong!")
+                return False
+            if currB.previousHash != prevB.calculateHash():
+                print('something wrong')
+                return False
+        return True
+    
+
+    def printEntireChain(self):
+        for index in range(len(self.chain)):
+            print(self.chain[index])
+        return
 
     @property
     def last_block(self):
         return self.chain[-1]
 
-    
+    #takes in a goal(publicHash)
     def proofOfWork(self, last_proof, goal):
         
         intList= turnRawToListOfInt()
@@ -58,7 +101,7 @@ class Blockchain(object):
            
 
             proof = intList[pi]
-            last_proof = intList[mid]
+
 
 
             while lo < hi:
@@ -67,20 +110,14 @@ class Blockchain(object):
                 result = self.validProof(last_proof,proof,goal)
                 if result == 0:
                     print('found that hoe!')
+                    print('double checking')
                     return [proof, last_proof]
                 elif result > 0:
                     high = mid -1
                 else:
                     lo = mid + 1 
-
-
-
-
-
-
-        
-        
-        return proof
+        print("nothign found!")
+        return -1
 
     def validProof(last_proof, proof, goal):
         return (last_proof * proof )- goal
@@ -89,3 +126,5 @@ class Blockchain(object):
         multiply up to the goal
         
         ''' 
+
+
